@@ -50,7 +50,7 @@ provision:
 
   # Remove old containers and volumes.
   - dip compose down --volumes --remove-orphans
-
+  - docker volume create rails_key_rotator-history
   - dip compose build
 
   # Install gems

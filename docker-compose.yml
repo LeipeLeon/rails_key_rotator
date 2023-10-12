@@ -8,3 +8,14 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/app
+      - bundle:/usr/local/bundle
+      - history:/usr/local/hist
+    environment:
+      HISTFILE: /usr/local/hist/.bash_history
+      IRB_HISTFILE: /usr/local/hist/.irb_history
+
+volumes:
+  bundle:
+  history:
+    external: true
+    name: rails_key_rotator-history
