@@ -1,0 +1,10 @@
+version: '3.8'
+
+services:
+  rails_key_rotator:
+    container_name: rails_key_rotator
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/app

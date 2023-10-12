@@ -1,0 +1,64 @@
+# Required minimum dip version
+version: '7.5'
+
+environment:
+  RAILS_ENV: development
+
+compose:
+  files:
+    - docker-compose.yml
+    - docker-compose.override.yml # platform specific overrides
+
+interaction:
+  sh:
+    description: Open a Bash shell within a Rails container (with dependencies up)
+    command: /bin/bash
+    service: rails_key_rotator
+
+  bash:
+    description: Run an arbitrary script within a container (or open a shell without deps)
+    command: /bin/bash
+    service: rails_key_rotator
+
+  bundle:
+    description: Run Bundler commands
+    command: bundle
+    service: rails_key_rotator
+
+  rake:
+    description: Run Rake commands
+    command: bundle exec rake
+    service: rails_key_rotator
+
+  guard:
+    description: Run red-green-red refactor loop using guard
+    environment:
+      RAILS_ENV: test
+    command: bundle exec guard
+    service: rails_key_rotator
+
+  rspec:
+    description: Run Rails tests
+    environment:
+      RAILS_ENV: test
+    command: bundle exec rspec
+    service: rails_key_rotator
+
+provision:
+  # Dip requires .env to do anything
+  - touch .env
+
+  # Remove old containers and volumes.
+  - dip compose down --volumes --remove-orphans
+
+  - dip compose build
+
+  # Install gems
+  - dip bundle install
+
+  # Setup configuration files if they do not (yet) exist
+  # use `|| true` to fix error when /bin/cp is used (which returns 1 when file exists)
+  - cp -n docker-compose.override.yml.example docker-compose.override.yml || true
+  - cp -n .env.local.example .env.local || true
+  - cp -n .env.example .env || true
+
