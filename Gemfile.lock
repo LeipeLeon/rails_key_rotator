@@ -1,0 +1,17 @@
+PATH
+  remote: .
+  specs:
+    rails_key_rotator (0.0.0)
+
+GEM
+  remote: https://rubygems.org/
+  specs:
+
+PLATFORMS
+  x86_64-linux
+
+DEPENDENCIES
+  rails_key_rotator!
+
+BUNDLED WITH
+   2.4.20
