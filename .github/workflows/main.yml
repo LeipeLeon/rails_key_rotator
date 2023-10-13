@@ -58,7 +58,7 @@ jobs:
         run: |
           bundle install --jobs 4
       - name: Run tests
-        run: bundle exec rake test
+        run: bundle exec rspec
 
   # rubocop:
 
