@@ -25,10 +25,6 @@ jobs:
           - active_support_61
           - active_support_70
           - active_support_71
-        # exclude:
-        #   # The activerecord-jdbcsqlite3-adapter gem does not work with Rails 7.1 yet
-        #   - ruby: "jruby-9.4"
-        #     gemfile: active_support_71
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
 
@@ -60,16 +56,14 @@ jobs:
       - name: Run tests
         run: bundle exec rspec
 
-  # rubocop:
-
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - uses: actions/checkout@v4
-  #     - name: Set up Ruby
-  #       uses: ruby/setup-ruby@v1
-  #       with:
-  #         ruby-version: "3.2"
-  #         bundler-cache: true
-  #     - name: Run RuboCop
-  #       run: bundle exec rubocop -P
+  standardrb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: "3.2"
+          bundler-cache: true
+      - name: Run RuboCop
+        run: bundle exec standardrb
