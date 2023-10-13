@@ -74,11 +74,12 @@ jobs:
         run: bundle exec rubocop
 
   publish:
+    name: Build + Publish GPR / RubyGems
     needs: [
       spec,
       standardrb
     ]
-    name: Build + Publish
+    continue-on-error: true
     runs-on: ubuntu-latest
     permissions:
       contents: read
