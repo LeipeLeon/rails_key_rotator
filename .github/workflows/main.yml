@@ -65,5 +65,7 @@ jobs:
         with:
           ruby-version: "3.2"
           bundler-cache: true
-      - name: Run RuboCop
+      - name: Run StandardRB
         run: bundle exec standardrb
+      - name: Run RuboCop
+        run: bundle exec rubocop
