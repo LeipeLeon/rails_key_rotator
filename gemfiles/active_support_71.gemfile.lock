@@ -1,5 +1,5 @@
 PATH
-  remote: .
+  remote: ..
   specs:
     rails_key_rotator (0.1.0)
       activesupport (>= 6.0, < 7.2)
@@ -131,6 +131,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  activesupport (~> 7.1.0)
   appraisal
   guard-rspec
   rails_key_rotator!
