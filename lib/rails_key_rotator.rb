@@ -5,6 +5,8 @@ require "tempfile"
 require "active_support"
 require "active_support/encrypted_configuration"
 
+require "rails_key_rotator/railtie" if defined?(Rails)
+
 module RailsKeyRotator
   class Error < StandardError; end
   # Your code goes here...
