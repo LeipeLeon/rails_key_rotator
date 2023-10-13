@@ -32,11 +32,11 @@ Gem::Specification.new do |spec|
   spec.executables = spec.files.grep(%r{\Aexe/}) { |f| File.basename(f) }
   spec.require_paths = ["lib"]
 
-  spec.add_development_dependency "rspec", "~> 3.2"
+  spec.add_runtime_dependency "activesupport", ">= 6.1", "< 7.2"
 
-  # Uncomment to register a new dependency of your gem
-  # spec.add_dependency "rails", "~> 7.0"
-
-  # For more information and examples about making a new gem, check out our
-  # guide at: https://bundler.io/guides/creating_gem.html
+  spec.add_development_dependency "appraisal"
+  spec.add_development_dependency "rake"
+  spec.add_development_dependency "rspec"
+  spec.add_development_dependency "guard-rspec"
+  spec.add_development_dependency "standard"
 end
