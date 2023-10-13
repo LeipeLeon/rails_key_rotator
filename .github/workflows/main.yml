@@ -1,16 +1,13 @@
-name: Ruby
+
+name: Test, build and publish
 
 on:
   push:
     branches:
       - main
-  pull_request:
-
-  schedule:
-    - cron: '16 4 12 * *'
 
 jobs:
-  build:
+  spec:
     runs-on: ubuntu-latest
     name: Ruby ${{ matrix.ruby }}
     strategy:
@@ -26,6 +23,11 @@ jobs:
           - active_support_61
           - active_support_70
           - active_support_71
+        exclude:
+          - ruby: "2.6"
+            gemfile: active_support_70
+          - ruby: "2.6"
+            gemfile: active_support_71
     env:
       BUNDLE_GEMFILE: gemfiles/${{ matrix.gemfile }}.gemfile
 
@@ -70,3 +72,44 @@ jobs:
         run: bundle exec standardrb
       - name: Run RuboCop
         run: bundle exec rubocop
+
+  publish:
+    needs: [
+      spec,
+      standardrb
+    ]
+    name: Build + Publish
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+    - uses: actions/checkout@v3
+    - name: Set up Ruby 3.2
+      uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: 3.2
+
+    - name: Publish to GPR
+      run: |
+        mkdir -p $HOME/.gem
+        touch $HOME/.gem/credentials
+        chmod 0600 $HOME/.gem/credentials
+        printf -- "---\n:github: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        gem build *.gemspec
+        gem push --KEY github --host https://rubygems.pkg.github.com/${OWNER} *.gem
+      env:
+        GEM_HOST_API_KEY: "Bearer ${{secrets.GITHUB_TOKEN}}"
+        OWNER: ${{ github.repository_owner }}
+
+    - name: Publish to RubyGems
+      run: |
+        mkdir -p $HOME/.gem
+        touch $HOME/.gem/credentials
+        chmod 0600 $HOME/.gem/credentials
+        printf -- "---\n:rubygems_api_key: ${GEM_HOST_API_KEY}\n" > $HOME/.gem/credentials
+        gem build *.gemspec
+        gem push *.gem
+      env:
+        GEM_HOST_API_KEY: "${{secrets.RUBYGEMS_AUTH_TOKEN}}"
