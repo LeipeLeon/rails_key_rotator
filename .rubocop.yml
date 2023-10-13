@@ -1,0 +1,21 @@
+require:
+  - standard
+inherit_gem:
+  standard: config/base.yml
+
+Gemspec/DependencyVersion:
+  Enabled: true
+Gemspec/DeprecatedAttributeAssignment:
+  Enabled: true
+Gemspec/DevelopmentDependencies:
+  Enabled: true
+Gemspec/DuplicatedAssignment:
+  Enabled: true
+Gemspec/OrderedDependencies:
+  Enabled: true
+Gemspec/RequireMFA:
+  Enabled: true
+Gemspec/RequiredRubyVersion:
+  Enabled: true
+Gemspec/RubyVersionGlobalsUsage:
+  Enabled: true
