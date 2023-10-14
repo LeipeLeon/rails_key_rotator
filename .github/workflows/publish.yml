@@ -97,9 +97,9 @@ jobs:
         chmod 0600 $HOME/.gem/credentials
     - name: Find version
       run: |
-        echo "DIST_VERSION=$(rake version)" >> $GITHUB_ENV
-        git tag $(rake version)
-        git push origin
+        TAGNAME=$(bundle exec rake version)
+        git tag -a ${TAGNAME} -m "Tagged w/ Github Action"
+        git push origin ${TAGNAME}.
 
     - name: Publish to GPR
       run: |
