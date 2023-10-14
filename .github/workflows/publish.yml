@@ -97,7 +97,7 @@ jobs:
         chmod 0600 $HOME/.gem/credentials
     - name: Find version
       run: |
-        echo "DIST_VERSION=${rake version}" >> $GITHUB_ENV
+        echo "DIST_VERSION=$(rake version)" >> $GITHUB_ENV
     - name: Create Tag
       uses: actions/github-script@v6
       with:
