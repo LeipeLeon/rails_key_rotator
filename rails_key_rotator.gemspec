@@ -10,7 +10,7 @@ Gem::Specification.new do |spec|
 
   spec.summary = "Rotate your RAILS_MASTER_KEY with ease"
   # spec.description = "TODO: Write a longer description or delete this line."
-  spec.homepage = "https://wendbaar.nl"
+  spec.homepage = "https://www.wendbaar.nl"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
 
