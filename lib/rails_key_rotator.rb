@@ -24,7 +24,7 @@ module RailsKeyRotator
       end
     end
 
-    def credential_path
+    def credentials_path
       File.join(root, "config", "credentials", "#{env}.yml.enc")
     end
 
@@ -36,7 +36,7 @@ module RailsKeyRotator
 
     def can_read_credentials!
       ActiveSupport::EncryptedConfiguration.new(
-        config_path: credential_path,
+        config_path: credentials_path,
         env_key: "RAILS_MASTER_KEY_NEW",
         key_path: "",
         raise_if_missing_key: true

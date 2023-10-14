@@ -5,9 +5,9 @@ RSpec.describe RailsKeyRotator do
     expect(RailsKeyRotator::VERSION).not_to be nil
   end
 
-  describe ".credential_path" do
+  describe ".credentials_path" do
     it "returns a value" do
-      expect(described_class.credential_path).to eql("/app/config/credentials/test.yml.enc")
+      expect(described_class.credentials_path).to eql("/app/config/credentials/test.yml.enc")
     end
   end
 
@@ -26,7 +26,7 @@ RSpec.describe RailsKeyRotator do
     }
 
     before do
-      allow(described_class).to receive(:credential_path).and_return(credentials_file_path)
+      allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
     end
 
     after do
