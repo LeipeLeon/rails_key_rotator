@@ -24,7 +24,15 @@ module RailsKeyRotator
       end
     end
 
+    def credential_path
+      File.join(root, "config", "credentials", "#{env}.yml.enc")
+    end
+
     private
+
+    def root
+      defined?(Rails) ? Rails.root : Dir.pwd
+    end
 
     def can_read_credentials!
       ActiveSupport::EncryptedConfiguration.new(
@@ -35,10 +43,6 @@ module RailsKeyRotator
       ).read
     rescue ActiveSupport::MessageEncryptor::InvalidMessage
       false
-    end
-
-    def credential_path
-      Rails.root.join("config/credentials/#{env}.yml.enc")
     end
 
     def say(message)
