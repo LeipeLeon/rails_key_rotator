@@ -11,6 +11,12 @@ RSpec.describe RailsKeyRotator do
     end
   end
 
+  describe ".key_path" do
+    it "returns a value" do
+      expect(described_class.key_path).to eql("/app/config/credentials/test.key")
+    end
+  end
+
   describe ".rotated?" do
     let(:old_key) { ActiveSupport::EncryptedConfiguration.generate_key }
     let(:new_key) { ActiveSupport::EncryptedConfiguration.generate_key }

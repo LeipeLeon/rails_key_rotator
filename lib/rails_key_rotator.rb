@@ -28,6 +28,10 @@ module RailsKeyRotator
       File.join(root, "config", "credentials", "#{env}.yml.enc")
     end
 
+    def key_path
+      File.join(root, "config", "credentials", "#{env}.key")
+    end
+
     private
 
     def root
@@ -38,7 +42,7 @@ module RailsKeyRotator
       ActiveSupport::EncryptedConfiguration.new(
         config_path: credentials_path,
         env_key: "RAILS_MASTER_KEY_NEW",
-        key_path: "",
+        key_path: key_path,
         raise_if_missing_key: true
       ).read
     rescue ActiveSupport::MessageEncryptor::InvalidMessage
