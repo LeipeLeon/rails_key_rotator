@@ -15,28 +15,17 @@ If bundler is not being used to manage dependencies, install the gem by executin
 > _*⚠️ !!! WARNING !!! ⚠️*_
 > _*⚠️ DON'T FORGET TO HANDOUT THE NEW KEY TO YOUR COLLEAGUES! ⚠️*_
 
-1. First create a new key w/ `dip rails runner "puts ActiveSupport::EncryptedConfiguration.generate_key"` and deploy this in `RAILS_MASTER_KEY_NEW` on the targeted infrastructure.
+1. run the rake taks
 
-2. While waiting on deploying this variable, create a new encrypted file:
+        bundle rake key_rotator:rotate
 
-   ```shell
-   # Copy the output current credentials
-   dip credentials show -e development
-   # Backup current credentials
-   mv -i config/credentials/development.yml.enc config/credentials/development.yml.enc.bak-$(date "+%Y-%m-%d-%H%M")
-   # Backup current key
-   mv -i config/credentials/development.key config/credentials/development.key.bak-$(date "+%Y-%m-%d-%H%M")
-   # Save the new key into file
-   echo d92599b046b58ab2d4158212e6d27162 > config/credentials/development.key
-   # Create new credentials file w/
-   dip credentials -e development
-   # Verify content
-   dip credentials show -e development
-   ```
+    This will backup current key / credentials, create a new key and saves encrypts the credentails w/ this new key
 
-3. Commit to Github and deploy new encrypted file.
+1. Deploying this variable as an env `RAILS_MASTER_KEY_NEW`
 
-4. After a while when everything is back in sync replace `RAILS_MASTER_KEY` w/ the new key and delete `RAILS_MASTER_KEY_NEW`
+1. Commit and deploy new encrypted file.
+
+1. After a while when everything is back in sync replace `RAILS_MASTER_KEY` w/ the new key and delete `RAILS_MASTER_KEY_NEW`
 
 ### Process
 
