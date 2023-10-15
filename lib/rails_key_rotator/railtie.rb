@@ -8,7 +8,7 @@ module RailsKeyRotator
       KeyRotator.rotated?
     end
     rake_tasks do
-      load "lib/tasks/key_rotator.rake"
+      load "tasks/key_rotator.rake"
     end
   end
 end
