@@ -1,6 +1,19 @@
 # frozen_string_literal: true
 
 RSpec.describe RailsKeyRotator do
+  let(:old_key) { ActiveSupport::EncryptedConfiguration.generate_key }
+  let(:new_key) { ActiveSupport::EncryptedConfiguration.generate_key }
+  let(:credentials_file_path) { Tempfile.new("credentials.yml.enc").path }
+  let(:credentials_key_path) { Tempfile.new("master.key").path }
+  let(:credentials) {
+    ActiveSupport::EncryptedConfiguration.new(
+      config_path: credentials_file_path,
+      key_path: credentials_key_path,
+      env_key: "RAILS_MASTER_KEY",
+      raise_if_missing_key: true
+    )
+  }
+
   it "has a version number" do
     expect(RailsKeyRotator::VERSION).not_to be nil
   end
@@ -18,21 +31,9 @@ RSpec.describe RailsKeyRotator do
   end
 
   describe ".rotated?" do
-    let(:old_key) { ActiveSupport::EncryptedConfiguration.generate_key }
-    let(:new_key) { ActiveSupport::EncryptedConfiguration.generate_key }
-    let(:credentials_file_path) { Tempfile.new("credentials.yml.enc") }
-    let(:credentials_key_path) { Tempfile.new("master.key") }
-    let(:credentials) {
-      ActiveSupport::EncryptedConfiguration.new(
-        config_path: credentials_file_path,
-        key_path: credentials_key_path,
-        env_key: "RAILS_MASTER_KEY",
-        raise_if_missing_key: true
-      )
-    }
-
     before do
       allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
+      allow(described_class).to receive(:key_path).and_return(credentials_key_path)
     end
 
     after do
@@ -91,6 +92,41 @@ RSpec.describe RailsKeyRotator do
           expect { described_class.rotated? }.to output(/KeyRotator: Using NEW key for test env/).to_stderr
           expect(ENV["RAILS_MASTER_KEY"]).to eql(new_key)
         end
+      end
+    end
+  end
+
+  describe ".rotate" do
+    let(:credentials_file_path) { Tempfile.new("credentials.yml.enc").path }
+    let(:credentials_key_path) { Tempfile.new("master.key").path }
+
+    subject { described_class.rotate }
+
+    context "no credentails available" do
+      it "raises an error" do
+        expect { subject }.to raise_error(ActiveSupport::EncryptedFile::MissingKeyError)
+      end
+    end
+
+    context "credentials available" do
+      before do
+        allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
+        allow(described_class).to receive(:key_path).and_return(credentials_key_path)
+        allow(Time).to receive(:new).and_return(Time.at(1697359415)) # 2023-10-15-104335
+
+        File.write(credentials_key_path, old_key)
+        credentials.write({something: {good: true, bad: false}}.to_yaml)
+      end
+
+      it "does backup when files exists" do
+        allow(FileUtils).to receive(:mv)
+        allow(File).to receive(:write)
+
+        subject
+
+        expect(FileUtils).to have_received(:mv).with(credentials_key_path, "#{credentials_key_path}.bak-2023-10-15-084335").once
+        expect(FileUtils).to have_received(:mv).with(credentials_file_path, "#{credentials_file_path}.bak-2023-10-15-084335").once
+        expect(File).to have_received(:write).with(credentials_key_path, described_class.send(:new_key)).once
       end
     end
   end

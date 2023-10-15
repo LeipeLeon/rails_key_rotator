@@ -24,6 +24,14 @@ module RailsKeyRotator
       end
     end
 
+    def rotate
+      decrypted = read(credentials_path) # Decrypt current credentials
+      backup_file(key_path)              # Backup key
+      backup_file(credentials_path)      # Backup credentials
+      File.write(key_path, new_key)      # Save new key
+      write(decrypted)                   # Save new credentials
+    end
+
     def credentials_path
       File.join(root, "config", "credentials", "#{env}.yml.enc")
     end
@@ -55,6 +63,36 @@ module RailsKeyRotator
 
     def env
       defined?(Rails) ? Rails.env : (ENV["RAILS_ENV"] || "test")
+    end
+
+    def date
+      @date ||= Time.new.strftime("%Y-%m-%d-%H%M%S")
+    end
+
+    def new_key
+      @new_key ||= ActiveSupport::EncryptedConfiguration.generate_key
+    end
+
+    def backup_file(original)
+      FileUtils.mv(original, "#{original}.bak-#{date}")
+    end
+
+    def read(credentials_path) # the old configuration
+      ActiveSupport::EncryptedConfiguration.new(
+        config_path: credentials_path,
+        key_path: key_path,
+        env_key: "",
+        raise_if_missing_key: true
+      ).read
+    end
+
+    def write(contents) # the new configuration
+      ActiveSupport::EncryptedConfiguration.new(
+        config_path: credentials_path,
+        key_path: key_path,
+        env_key: "",
+        raise_if_missing_key: true
+      ).write(contents)
     end
   end
 end
