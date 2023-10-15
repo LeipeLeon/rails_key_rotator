@@ -11,7 +11,7 @@ RSpec.describe RailsKeyRotator do
     end
   end
 
-  describe ".call" do
+  describe ".rotated?" do
     let(:old_key) { ActiveSupport::EncryptedConfiguration.generate_key }
     let(:new_key) { ActiveSupport::EncryptedConfiguration.generate_key }
     let(:credentials_file_path) { Tempfile.new("credentials.yml.enc") }
@@ -43,7 +43,7 @@ RSpec.describe RailsKeyRotator do
       end
 
       it "does silently nothing" do
-        expect { described_class.call }.to output("").to_stderr
+        expect { described_class.rotated? }.to output("").to_stderr
       end
     end
 
@@ -54,7 +54,7 @@ RSpec.describe RailsKeyRotator do
       end
 
       it "does silently nothing" do
-        expect { described_class.call }.to output("").to_stderr
+        expect { described_class.rotated? }.to output("").to_stderr
       end
     end
 
@@ -66,7 +66,7 @@ RSpec.describe RailsKeyRotator do
       end
 
       it "file encrypted w/ old key" do
-        expect { described_class.call }.to output(/KeyRotator: Using OLD key for test env/).to_stderr
+        expect { described_class.rotated? }.to output(/KeyRotator: Using OLD key for test env/).to_stderr
         expect(ENV["RAILS_MASTER_KEY"]).not_to eql(new_key)
       end
 
@@ -82,7 +82,7 @@ RSpec.describe RailsKeyRotator do
 
         it "Uses new key" do
           expect(ENV["RAILS_MASTER_KEY_NEW"]).to eql(new_key)
-          expect { described_class.call }.to output(/KeyRotator: Using NEW key for test env/).to_stderr
+          expect { described_class.rotated? }.to output(/KeyRotator: Using NEW key for test env/).to_stderr
           expect(ENV["RAILS_MASTER_KEY"]).to eql(new_key)
         end
       end

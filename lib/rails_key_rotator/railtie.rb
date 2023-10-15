@@ -5,7 +5,7 @@ require "rails"
 module RailsKeyRotator
   class Railtie < Rails::Railtie
     config.before_initialize do
-      KeyRotator.call
+      KeyRotator.rotated?
     end
   end
 end

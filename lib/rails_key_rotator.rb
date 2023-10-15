@@ -11,7 +11,7 @@ module RailsKeyRotator
   class Error < StandardError; end
   # Your code goes here...
   class << self
-    def call
+    def rotated?
       return if ENV["RAILS_MASTER_KEY"].blank?
 
       if ENV.fetch("RAILS_MASTER_KEY_NEW", false)
