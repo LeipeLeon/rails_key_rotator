@@ -1,0 +1,3 @@
+{
+  "lib/*.rb": { "alternate": "spec/{}_spec.rb" }
+}
