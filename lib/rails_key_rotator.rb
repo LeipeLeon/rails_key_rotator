@@ -9,7 +9,7 @@ require "rails_key_rotator/railtie" if defined?(Rails)
 
 module RailsKeyRotator
   class Error < StandardError; end
-  # Your code goes here...
+
   class << self
     def rotated?
       return if ENV["RAILS_MASTER_KEY"].blank?
