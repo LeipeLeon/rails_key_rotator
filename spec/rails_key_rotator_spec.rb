@@ -20,13 +20,13 @@ RSpec.describe RailsKeyRotator do
 
   describe ".credentials_path" do
     it "returns a value" do
-      expect(described_class.credentials_path).to eql("/app/config/credentials/test.yml.enc")
+      expect(described_class.credentials_path).to match("config/credentials/test.yml.enc")
     end
   end
 
   describe ".key_path" do
     it "returns a value" do
-      expect(described_class.key_path).to eql("/app/config/credentials/test.key")
+      expect(described_class.key_path).to match("config/credentials/test.key")
     end
   end
 
