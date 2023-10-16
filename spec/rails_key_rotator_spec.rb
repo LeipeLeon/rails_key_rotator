@@ -109,40 +109,45 @@ RSpec.describe RailsKeyRotator do
     end
 
     context "credentials available" do
-      before do
-        allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
-        allow(described_class).to receive(:key_path).and_return(credentials_key_path)
-        allow(described_class).to receive(:new_key).and_return(new_key)
-        allow(Time).to receive(:new).and_return(Time.at(1697359415)) # 2023-10-15-104335
+      context "key as a file" do
+        before do
+          allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
+          allow(described_class).to receive(:key_path).and_return(credentials_key_path)
+          allow(described_class).to receive(:new_key).and_return(new_key)
+          allow(Time).to receive(:new).and_return(Time.at(1697359415)) # 2023-10-15-104335
 
-        File.write(credentials_key_path, old_key)
-        credentials.write({something: {good: true, bad: false}}.to_yaml)
+          File.write(credentials_key_path, old_key)
+          credentials.write({something: {good: true, bad: false}}.to_yaml)
+        end
+
+        it "does backup when files exists" do
+          allow(FileUtils).to receive(:mv)
+          allow(File).to receive(:write)
+
+          expected = <<~EXPECT
+            Starting process:
+            -> Copy #{credentials_key_path} -> #{credentials_key_path}.bak-2023-10-15-084335
+            -> Copy #{credentials_file_path} -> #{credentials_file_path}.bak-2023-10-15-084335
+            -> Writing #{new_key} to #{credentials_key_path}
+
+            Finished! The next steps are:
+
+            - Deploy `RAILS_MASTER_KEY_NEW=#{new_key}` to your infrastructure
+            - Share the new key w/ your colleagues
+            - Commit changes in #{credentials_file_path}
+            - Update `RAILS_MASTER_KEY`and remove `RAILS_MASTER_KEY_NEW` from your infrastructure
+
+          EXPECT
+          expect { subject }.to output(expected).to_stdout
+
+          expect(FileUtils).to have_received(:mv).with(credentials_key_path, "#{credentials_key_path}.bak-2023-10-15-084335").once
+          expect(FileUtils).to have_received(:mv).with(credentials_file_path, "#{credentials_file_path}.bak-2023-10-15-084335").once
+          expect(File).to have_received(:write).with(credentials_key_path, described_class.send(:new_key)).once
+        end
       end
 
-      it "does backup when files exists" do
-        allow(FileUtils).to receive(:mv)
-        allow(File).to receive(:write)
-
-        expected = <<~EXPECT
-          Starting process:
-          -> Copy #{credentials_key_path} -> #{credentials_key_path}.bak-2023-10-15-084335
-          -> Copy #{credentials_file_path} -> #{credentials_file_path}.bak-2023-10-15-084335
-          -> Writing #{new_key} to #{credentials_key_path}
-
-          Finished! The next steps are:
-
-          - Deploy `RAILS_MASTER_KEY_NEW=#{new_key}` to your infrastructure
-          - Share the new key w/ your colleagues
-          - Commit changes in #{credentials_file_path}
-          - Update `RAILS_MASTER_KEY`and remove `RAILS_MASTER_KEY_NEW` from your infrastructure
-
-        EXPECT
-        expect { subject }.to output(expected).to_stdout
-        # output(/KeyRotator\(test\): Copy/).to_stderr
-
-        expect(FileUtils).to have_received(:mv).with(credentials_key_path, "#{credentials_key_path}.bak-2023-10-15-084335").once
-        expect(FileUtils).to have_received(:mv).with(credentials_file_path, "#{credentials_file_path}.bak-2023-10-15-084335").once
-        expect(File).to have_received(:write).with(credentials_key_path, described_class.send(:new_key)).once
+      context "key as a ENV var" do
+        pending "process"
       end
     end
   end
