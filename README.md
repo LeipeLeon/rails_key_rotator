@@ -17,9 +17,22 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
 1. Run the rake taks
 
-        bundle rake key_rotator:rotate
+        $ RAILS_ENV=production bundle exec rake key_rotator:rotate
 
-    This will backup current key / credentials, create a new key and saves encrypts the credentails w/ this new key
+        Starting process:
+        -> Copy config/credentials/production.key -> config/credentials/production.key.bak-2023-10-15-084335
+        -> Copy config/credentials/production.yml.enc -> config/credentials/production.yml.enc.bak-2023-10-15-084335
+        -> Writing 774ef137809953c633f03233d3ec5d35 to config/credentials/production.key
+
+        Finished! The next steps are:
+
+        - Deploy `RAILS_MASTER_KEY_NEW=774ef137809953c633f03233d3ec5d35` to your infrastructure
+        - Share the new key w/ your colleagues
+        - Commit changes in config/credentials/production.yml.enc
+        - Update `RAILS_MASTER_KEY`and remove `RAILS_MASTER_KEY_NEW` from your infrastructure
+
+    This will backup current key / credentials, create a new key and saves encrypts the credentails w/ this new key for the current `RAILS_ENV`
+
 
 2. Deploying this variable as an env `RAILS_MASTER_KEY_NEW`
 
