@@ -23,6 +23,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
         -> Copy config/credentials/production.key -> config/credentials/production.key.bak-2023-10-15-084335
         -> Copy config/credentials/production.yml.enc -> config/credentials/production.yml.enc.bak-2023-10-15-084335
         -> Writing 774ef137809953c633f03233d3ec5d35 to config/credentials/production.key
+        -> Writing the re-encrypted credentials to config/credentials/production.yml.enc
 
         Finished! The next steps are:
 

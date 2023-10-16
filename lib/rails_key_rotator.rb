@@ -104,6 +104,7 @@ module RailsKeyRotator
     end
 
     def write_credentials(contents) # the new configuration
+      say "Writing the re-encrypted credentials to #{credentials_path}"
       ActiveSupport::EncryptedConfiguration.new(
         config_path: credentials_path,
         key_path: key_path,

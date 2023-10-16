@@ -150,6 +150,7 @@ RSpec.describe RailsKeyRotator do
             -> Copy #{credentials_file_path} -> #{credentials_file_path}.bak-2023-10-15-084335
             -> Copy #{credentials_key_path} -> #{credentials_key_path}.bak-2023-10-15-084335
             -> Writing #{new_key} to #{credentials_key_path}
+            -> Writing the re-encrypted credentials to #{credentials_file_path}
 
             Finished! The next steps are:
 
