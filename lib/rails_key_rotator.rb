@@ -27,8 +27,8 @@ module RailsKeyRotator
     def rotate
       puts "Starting process:"
       decrypted = read(credentials_path) # Decrypt current credentials
-      backup_file(key_path)              # Backup key
       backup_file(credentials_path)      # Backup credentials
+      backup_file(key_path)              # Backup key
       write_key                          # Save new key
       write_credentials(decrypted)       # Save new credentials
       puts <<~PROCEDURE

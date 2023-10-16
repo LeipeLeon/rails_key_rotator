@@ -125,8 +125,8 @@ RSpec.describe RailsKeyRotator do
 
           expected = <<~EXPECT
             Starting process:
-            -> Copy #{credentials_key_path} -> #{credentials_key_path}.bak-2023-10-15-084335
             -> Copy #{credentials_file_path} -> #{credentials_file_path}.bak-2023-10-15-084335
+            -> Copy #{credentials_key_path} -> #{credentials_key_path}.bak-2023-10-15-084335
             -> Writing #{new_key} to #{credentials_key_path}
 
             Finished! The next steps are:
