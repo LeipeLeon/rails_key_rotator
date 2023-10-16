@@ -13,6 +13,9 @@ RSpec.describe RailsKeyRotator do
       raise_if_missing_key: true
     )
   }
+  before do
+    allow(Time).to receive(:new).and_return(Time.at(1697359415)) # 2023-10-15-084335
+  end
 
   after do
     ENV["RAILS_MASTER_KEY"] = nil
@@ -111,7 +114,6 @@ RSpec.describe RailsKeyRotator do
           allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
           allow(described_class).to receive(:key_path).and_return(credentials_key_path)
           allow(described_class).to receive(:new_key).and_return(new_key)
-          allow(Time).to receive(:new).and_return(Time.at(1697359415)) # 2023-10-15-104335
 
           File.write(credentials_key_path, old_key)
           credentials.write({something: {good: true, bad: false}}.to_yaml)
