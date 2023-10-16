@@ -103,8 +103,30 @@ RSpec.describe RailsKeyRotator do
     subject { described_class.rotate }
 
     context "no credentails available" do
-      it "raises an error" do
+      it "raises an error when no key" do
         expect { subject }.to raise_error(ActiveSupport::EncryptedFile::MissingKeyError)
+      end
+
+      context "with key" do
+        before {
+          allow(described_class).to receive(:key_path).and_return(credentials_key_path)
+        }
+
+        it "raises an error when key file available" do
+          File.write(credentials_key_path, old_key)
+          expect { subject }.to raise_error(
+            RuntimeError, /File does not exist: .*credentials\/test.yml.enc/
+          )
+        end
+      end
+
+      context "with ENV" do
+        before { ENV["RAILS_MASTER_KEY"] = old_key }
+        it "raises an error when key available" do
+          expect { subject }.to raise_error(
+            RuntimeError, /File does not exist: .*credentials\/test.yml.enc/
+          )
+        end
       end
     end
 

@@ -89,6 +89,7 @@ module RailsKeyRotator
     end
 
     def backup_file(original)
+      raise "File does not exist: #{original}" unless File.exist?(original)
       say "Copy #{original} -> #{original}.bak-#{date}"
       FileUtils.mv(original, "#{original}.bak-#{date}")
     end
@@ -97,7 +98,7 @@ module RailsKeyRotator
       ActiveSupport::EncryptedConfiguration.new(
         config_path: credentials_path,
         key_path: key_path,
-        env_key: "",
+        env_key: "RAILS_MASTER_KEY",
         raise_if_missing_key: true
       ).read
     end
