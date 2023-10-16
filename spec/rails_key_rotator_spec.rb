@@ -14,6 +14,13 @@ RSpec.describe RailsKeyRotator do
     )
   }
 
+  after do
+    ENV["RAILS_MASTER_KEY"] = nil
+    ENV["RAILS_MASTER_KEY_NEW"] = nil
+    FileUtils.rm_rf credentials_file_path
+    FileUtils.rm_rf credentials_key_path
+  end
+
   it "has a version number" do
     expect(RailsKeyRotator::VERSION).not_to be nil
   end
@@ -34,13 +41,6 @@ RSpec.describe RailsKeyRotator do
     before do
       allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
       allow(described_class).to receive(:key_path).and_return(credentials_key_path)
-    end
-
-    after do
-      ENV["RAILS_MASTER_KEY"] = nil
-      ENV["RAILS_MASTER_KEY_NEW"] = nil
-      FileUtils.rm_rf credentials_file_path
-      FileUtils.rm_rf credentials_key_path
     end
 
     context "When 'RAILS_MASTER_KEY' is not set" do
@@ -97,9 +97,6 @@ RSpec.describe RailsKeyRotator do
   end
 
   describe ".rotate" do
-    let(:credentials_file_path) { Tempfile.new("credentials.yml.enc").path }
-    let(:credentials_key_path) { Tempfile.new("master.key").path }
-
     subject { described_class.rotate }
 
     context "no credentails available" do
