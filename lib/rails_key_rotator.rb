@@ -17,19 +17,30 @@ module RailsKeyRotator
       if ENV.fetch("RAILS_MASTER_KEY_NEW", false)
         if can_read_credentials!
           ENV["RAILS_MASTER_KEY"] = ENV.fetch("RAILS_MASTER_KEY_NEW")
-          say "NEW key"
+          say_loud "Using NEW key"
         else
-          say "OLD key"
+          say_loud "Using OLD key"
         end
       end
     end
 
     def rotate
+      puts "Starting process:"
       decrypted = read(credentials_path) # Decrypt current credentials
       backup_file(key_path)              # Backup key
       backup_file(credentials_path)      # Backup credentials
-      File.write(key_path, new_key)      # Save new key
-      write(decrypted)                   # Save new credentials
+      write_key                          # Save new key
+      write_credentials(decrypted)       # Save new credentials
+      puts <<~PROCEDURE
+
+        Finished! The next steps are:
+
+        - Deploy `RAILS_MASTER_KEY_NEW=#{new_key}` to your infrastructure
+        - Share the new key w/ your colleagues
+        - Commit changes in #{credentials_path}
+        - Update `RAILS_MASTER_KEY`and remove `RAILS_MASTER_KEY_NEW` from your infrastructure
+
+      PROCEDURE
     end
 
     def credentials_path
@@ -58,7 +69,11 @@ module RailsKeyRotator
     end
 
     def say(message)
-      warn "\e[41;37;1m\n\n\tKeyRotator: Using #{message} for #{env} env\n\e[0m"
+      puts "-> #{message}"
+    end
+
+    def say_loud(message)
+      warn "\e[41;37;1m\n\n\tKeyRotator(#{env}): #{message}\n\e[0m"
     end
 
     def env
@@ -74,6 +89,7 @@ module RailsKeyRotator
     end
 
     def backup_file(original)
+      say "Copy #{original} -> #{original}.bak-#{date}"
       FileUtils.mv(original, "#{original}.bak-#{date}")
     end
 
@@ -86,13 +102,18 @@ module RailsKeyRotator
       ).read
     end
 
-    def write(contents) # the new configuration
+    def write_credentials(contents) # the new configuration
       ActiveSupport::EncryptedConfiguration.new(
         config_path: credentials_path,
         key_path: key_path,
         env_key: "",
         raise_if_missing_key: true
       ).write(contents)
+    end
+
+    def write_key
+      say "Writing #{new_key} to #{key_path}"
+      File.write(key_path, new_key)
     end
   end
 end

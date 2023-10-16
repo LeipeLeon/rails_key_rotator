@@ -73,7 +73,7 @@ RSpec.describe RailsKeyRotator do
       end
 
       it "file encrypted w/ old key" do
-        expect { described_class.rotated? }.to output(/KeyRotator: Using OLD key for test env/).to_stderr
+        expect { described_class.rotated? }.to output(/KeyRotator\(test\): Using OLD key/).to_stderr
         expect(ENV["RAILS_MASTER_KEY"]).not_to eql(new_key)
       end
 
@@ -89,7 +89,7 @@ RSpec.describe RailsKeyRotator do
 
         it "Uses new key" do
           expect(ENV["RAILS_MASTER_KEY_NEW"]).to eql(new_key)
-          expect { described_class.rotated? }.to output(/KeyRotator: Using NEW key for test env/).to_stderr
+          expect { described_class.rotated? }.to output(/KeyRotator\(test\): Using NEW key/).to_stderr
           expect(ENV["RAILS_MASTER_KEY"]).to eql(new_key)
         end
       end
@@ -112,6 +112,7 @@ RSpec.describe RailsKeyRotator do
       before do
         allow(described_class).to receive(:credentials_path).and_return(credentials_file_path)
         allow(described_class).to receive(:key_path).and_return(credentials_key_path)
+        allow(described_class).to receive(:new_key).and_return(new_key)
         allow(Time).to receive(:new).and_return(Time.at(1697359415)) # 2023-10-15-104335
 
         File.write(credentials_key_path, old_key)
@@ -122,7 +123,22 @@ RSpec.describe RailsKeyRotator do
         allow(FileUtils).to receive(:mv)
         allow(File).to receive(:write)
 
-        subject
+        expected = <<~EXPECT
+          Starting process:
+          -> Copy #{credentials_key_path} -> #{credentials_key_path}.bak-2023-10-15-084335
+          -> Copy #{credentials_file_path} -> #{credentials_file_path}.bak-2023-10-15-084335
+          -> Writing #{new_key} to #{credentials_key_path}
+
+          Finished! The next steps are:
+
+          - Deploy `RAILS_MASTER_KEY_NEW=#{new_key}` to your infrastructure
+          - Share the new key w/ your colleagues
+          - Commit changes in #{credentials_file_path}
+          - Update `RAILS_MASTER_KEY`and remove `RAILS_MASTER_KEY_NEW` from your infrastructure
+
+        EXPECT
+        expect { subject }.to output(expected).to_stdout
+        # output(/KeyRotator\(test\): Copy/).to_stderr
 
         expect(FileUtils).to have_received(:mv).with(credentials_key_path, "#{credentials_key_path}.bak-2023-10-15-084335").once
         expect(FileUtils).to have_received(:mv).with(credentials_file_path, "#{credentials_file_path}.bak-2023-10-15-084335").once
