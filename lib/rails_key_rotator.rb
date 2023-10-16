@@ -114,7 +114,7 @@ module RailsKeyRotator
     end
 
     def write_key
-      say "Writing #{new_key} to #{key_path}"
+      say %(Writing the key "#{new_key}" to #{key_path})
       File.write(key_path, new_key)
     end
   end
