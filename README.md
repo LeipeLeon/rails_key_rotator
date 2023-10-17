@@ -1,5 +1,7 @@
 # RailsKeyRotator
 
+[![Gem Version](https://badge.fury.io/rb/rails_key_rotator.svg)](https://badge.fury.io/rb/rails_key_rotator)
+
 > **Warning**
 > **THIS IS BETA SOFTWARE**
 >
