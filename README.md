@@ -23,7 +23,7 @@ If bundler is not being used to manage dependencies, install the gem by executin
 > **Warning**
 > **DON'T FORGET TO HANDOUT THE NEW KEY TO YOUR COLLEAGUES!**
 
-1. Run the rake taks
+1.  Run the rake taks
 
         $ RAILS_ENV=production bundle exec rake key_rotator:rotate
 
@@ -42,12 +42,11 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     This will backup current key / credentials, create a new key and saves encrypts the credentails w/ this new key for the current `RAILS_ENV`
 
+2.  Deploying this variable as an env `RAILS_MASTER_KEY_NEW`
 
-2. Deploying this variable as an env `RAILS_MASTER_KEY_NEW`
+3.  Commit and deploy new encrypted file.
 
-3. Commit and deploy new encrypted file.
-
-4. After a while when everything is back in sync replace `RAILS_MASTER_KEY` w/ the new key and delete `RAILS_MASTER_KEY_NEW`
+4.  After a while when everything is back in sync replace `RAILS_MASTER_KEY` w/ the new key and delete `RAILS_MASTER_KEY_NEW`
 
 ## Process
 
@@ -59,14 +58,12 @@ When we've defined `RAILS_MASTER_KEY_NEW` it means we are rotating the encryptio
 
 3. If not, we will fallback to the old key, thus leave `RAILS_MASTER_KEY` alone
 
-See: https://www.reddit.com/r/rails/comments/x4sujc/deploying_a_rotated_credentials_key_without/
-
-
 ## Development
 
 This project uses docker and [dip](https://github.com/bibendi/dip), a.k.a. the _Docker Interaction Program._
 
 To use it:
+
 ```shell
 gem install dip
 dip provision
@@ -86,3 +83,8 @@ The gem is available as open source under the terms of the [MIT License](https:/
 ## Code of Conduct
 
 Everyone interacting in the RailsKeyRotator project's codebases, issue trackers, chat rooms and mailing lists is expected to follow the [code of conduct](https://github.com/LeipeLeon/rails_key_rotator/blob/master/CODE_OF_CONDUCT.md).
+
+## Thanks to:
+
+- The fine folks of [kerkdienstgemist.nl](https://github.com/kdgm) allowed me to extract the basics from their sourcecode.
+- The [original inspirator](https://www.reddit.com/user/abuisman/) after some googling: <https://www.reddit.com/r/rails/comments/x4sujc/deploying_a_rotated_credentials_key_without/>
