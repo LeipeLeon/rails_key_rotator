@@ -4,7 +4,7 @@ require "rails"
 
 module RailsKeyRotator
   class Railtie < Rails::Railtie
-    config.before_initialize do
+    config.before_configuration do
       RailsKeyRotator.rotated?
     end
     rake_tasks do
