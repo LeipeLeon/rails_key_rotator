@@ -18,6 +18,13 @@ If bundler is not being used to manage dependencies, install the gem by executin
 
     $ gem install rails_key_rotator
 
+> **NOTE**
+> If you're using `dotenv-rails` make sure it is loaded before `rails_key_rotator` e.g:
+> ```ruby
+> gem "dotenv-rails"
+> gem "rails_key_rotator"
+> ```
+
 ## Usage
 
 > **Warning**
